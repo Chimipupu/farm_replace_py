@@ -33,11 +33,14 @@ def plant_Bush():
         plant(Entities.Bush)
 
 # 木作成
-# NOTE: 木は四方に木で囲うと成長側が1/16になる
-def plant_Tree():
-    if can_harvest():
-        harvest() # 収穫
-        plant(Entities.Tree)
+# NOTE: 木は四方に木で囲うと成長速度が1/16になる
+def plant_Tree(i, j):
+    if((i % 2 == 0) and (j % 2 == 0)) or (not(i % 2 == 0) and not(j % 2 == 0)) :
+        if can_harvest():
+            harvest() # 収穫
+            plant(Entities.Tree)
+    else:
+        harvest() # 空き地の草刈り
 
 # 草作成
 def plant_Hay():
@@ -56,13 +59,7 @@ while True:
         for j in range(12): # 農地面積 12x12
             # plant_Hay()         # 草
             # plant_Bush()        # 茂
-
-            # NOTE: 木は四方に木で囲うと成長側が1/16になる
-            if((i % 2 == 0) and (j % 2 == 0)) or (not(i % 2 == 0) and not(j % 2 == 0)) :
-                plant_Tree()        # 木
-            else:
-                harvest() # 空き地の草刈り
-
+            plant_Tree(i, j)        # 木
             # plant_Carrot()      # 人参
             # plant_Pumpkin()     # かぼちゃ
             move(North) # 北に移動
