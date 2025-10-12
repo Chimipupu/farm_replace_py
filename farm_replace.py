@@ -47,19 +47,22 @@ def plant_Hay():
         till() # 土を耕す
 
 while True:
-    clear()
+    # clear()
 
     i = 0
+    j = 0
     for i in range(12): # 農地面積 12x12
-        # plant_Hay()         # 草
-        # plant_Bush()        # 茂
+        move(East)
+        for j in range(12): # 農地面積 12x12
+            # plant_Hay()         # 草
+            # plant_Bush()        # 茂
 
-        # NOTE: 木は四方に木で囲うと成長側が1/16になる
-        if(i % 2 == 0):
-            plant_Tree()        # 木
+            # NOTE: 木は四方に木で囲うと成長側が1/16になる
+            if(i % 2 == 0) and (j % 2 == 0):
+                plant_Tree()        # 木
+            else:
+                harvest() # 空き地の草刈り
 
-        # plant_Carrot()      # 人参
-        # plant_Pumpkin()     # かぼちゃ
-        move(North) # 北に移動
-
-    move(East)
+            # plant_Carrot()      # 人参
+            # plant_Pumpkin()     # かぼちゃ
+            move(North) # 北に移動
