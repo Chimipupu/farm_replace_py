@@ -58,7 +58,7 @@ while True:
             # plant_Bush()        # 茂
 
             # NOTE: 木は四方に木で囲うと成長側が1/16になる
-            if(i % 2 == 0) and (j % 2 == 0):
+            if((i % 2 == 0) and (j % 2 == 0)) or (not(i % 2 == 0) and not(j % 2 == 0)) :
                 plant_Tree()        # 木
             else:
                 harvest() # 空き地の草刈り
