@@ -27,13 +27,13 @@ def farm_SpeedUp():
         if num_items(Items.Fertilizer) > 0:
             use_item(Items.Fertilizer)  # 肥料
 
-# 農作物作成関数
-def plant_entities(list_idx, i, j):
+# 農作物作成ステートマシーン
+def sm_plant_entities(list_idx, i, j):
     if (list_idx > ENTITIES_LIST_IDX_SUNFLOWER):
         return
 
     # にんじん or かぼちゃ
-    if (list_idx == (ENTITIES_LIST_IDX_CARROT or ENTITIES_LIST_IDX_PUMPKIN)):
+    if ((list_idx == ENTITIES_LIST_IDX_CARROT) or (list_idx == ENTITIES_LIST_IDX_PUMPKIN)):
         if get_ground_type() != Grounds.Soil:
             till()
 
@@ -76,8 +76,6 @@ def plant_entities(list_idx, i, j):
         if can_harvest():
             harvest()
 
-
-
 # メインループ
 while True:
     # clear()
@@ -86,9 +84,9 @@ while True:
     for i in range(wortd_size):
         move(East) # 東に移動
         for j in range(wortd_size):
-            # plant_entities(ENTITIES_LIST_IDX_GRASS,0,0)   # 草
-            # plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
-            # plant_entities(ENTITIES_LIST_IDX_CARROT,i,j)  # 木
-            plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
-            # plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
+            # sm_plant_entities(ENTITIES_LIST_IDX_GRASS,0,0)   # 草
+            # sm_plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
+            # sm_plant_entities(ENTITIES_LIST_IDX_TREE,i,j)    # 木
+            # sm_plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
+            sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
             move(North) # 北に移動
