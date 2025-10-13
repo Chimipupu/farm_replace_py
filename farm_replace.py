@@ -15,8 +15,8 @@ ENTITIES_LIST_IDX_CARROT    = 3
 ENTITIES_LIST_IDX_PUMPKIN   = 4
 ENTITIES_LIST_IDX_SUNFLOWER = 5
 
-MAZE_SOLVEING               = 0
-MAZE_GOAL                   = 1
+MAIN_DRONE                  = 0
+SUB_DRONE                   = 1
 
 # グローバル変数
 g_entities_list = [
@@ -97,25 +97,34 @@ def sm_plant_entities(list_idx, i, j):
 # 農作業
 def plant_proc():
     wortd_size = get_world_size()
-
     for i in range(wortd_size):
-        move(Eest) # 東に移動
+        move(East) # 東に移動
         for j in range(wortd_size):
             if(i < 2): # ひまわり
                 # ひまわりのパワーバブで速度2倍速
                 sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER,0,0) # ひまわり
-            elif (i <= 3) and (i >= 9):
+            else:
                 sm_plant_entities(ENTITIES_LIST_IDX_TREE,i,j)    # 木
-            elif (i <= 10) and (i >= 20): # 迷路生成
                 sm_plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
-                if num_items(Items.Fertilizer) > 0:
-                    use_item(Items.Fertilizer)  # 肥料
-            elif (i <= 20) and (i >= 26):
                 sm_plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
-            elif (i <= 27) and (i >= 32):
-                sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
+                if num_items(Items.Fertilizer) > 0:
+                        use_item(Items.Weird_Substance)
+                # sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
 
             move(North) # 北に移動
+
+# パワー充電
+def charge_power(drone_type):
+    wortd_size = get_world_size()
+    while (num_items(Items.Power) < 10000000): # パワーx1M溜まるまで
+        for i in range(wortd_size):
+            for j in range(wortd_size):
+                # ひまわりのパワーバブで速度2倍速
+                sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER,0,0) # ひまわり
+                move(North) # 北に移動
+            move(East) # 東に移動
+            spawn_drone(sub_proc) # サブドローンを生成
+
 
 # 迷路生成
 def create_maze():
@@ -164,22 +173,26 @@ def maze_solver():
             direction = (direction + 2) % 4
 
 def main_proc():
-    if(num_items(Items.Power) > 0):
+    # パワーが尽きるまで探索
+    if(num_items(Items.Power) > 1000):
         clear()
         create_maze() # 迷路生成
         maze_solver() # 迷路探索
     else:
         clear()
-        plant_proc()  # 農作業
+        charge_power(MAIN_DRONE)  # パワー充電
+
+def sub_proc():
+    wortd_size = get_world_size()
+    move(West) # 西に移動
+    for i in range(wortd_size):
+        move(South) # 南に移動
+        if can_harvest():
+            harvest()
+            sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER,0,0) # ひまわり
+        else:
+            move(West) # 西に移動
 
 # メインループ
 while True:
-    # spawn_drone(main_proc)
-
-    if(num_items(Items.Power) > 0):
-        clear()
-        create_maze() # 迷路生成
-        maze_solver() # 迷路探索
-    else:
-        clear()
-        plant_proc()  # 農作業
+    main_proc()
