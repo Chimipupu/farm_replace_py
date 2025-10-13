@@ -66,7 +66,10 @@ def sm_plant_entities(list_idx, i, j):
         if get_ground_type() != Grounds.Soil:
             till()
 
-        if can_harvest():
+        petals_cnt = measure()
+        # ひまわりの最大の花びら(=15)のときに刈り取る
+        # if ((petals_cnt == None) or ((petals_cnt == 15) and can_harvest())):
+        if ((petals_cnt == None) or can_harvest()):
             harvest()
             plant(g_entities_list[list_idx])
             farm_SpeedUp()
@@ -78,15 +81,19 @@ def sm_plant_entities(list_idx, i, j):
 
 # メインループ
 while True:
-    # clear()
+    #clear()
 
     wortd_size = get_world_size()# 農地面積
     for i in range(wortd_size):
         move(East) # 東に移動
         for j in range(wortd_size):
-            # sm_plant_entities(ENTITIES_LIST_IDX_GRASS,0,0)   # 草
-            # sm_plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
-            # sm_plant_entities(ENTITIES_LIST_IDX_TREE,i,j)    # 木
-            # sm_plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
-            sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
+            if (i == 0): # 農地の1列はひまわり用地
+                # ひまわりのパワーバブで速度2倍速
+                sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER,0,0) # ひまわり
+            else:
+                # sm_plant_entities(ENTITIES_LIST_IDX_GRASS,0,0)   # 草
+                # sm_plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
+                sm_plant_entities(ENTITIES_LIST_IDX_TREE,i,j)    # 木
+                # sm_plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
+                # sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
             move(North) # 北に移動
