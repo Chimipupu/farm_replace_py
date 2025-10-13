@@ -1,3 +1,24 @@
+# __builtins__ import *
+
+# 定数
+ENTITIES_LIST_IDX_GRASS     = 0
+ENTITIES_LIST_IDX_BUSH      = 1
+ENTITIES_LIST_IDX_TREE      = 2
+ENTITIES_LIST_IDX_CARROT    = 3
+ENTITIES_LIST_IDX_PUMPKIN   = 4
+ENTITIES_LIST_IDX_SUNFLOWER = 5
+
+# グローバル変数
+g_entities_list = [
+    Entities.Grass,     # 草
+    Entities.Bush,      # 茂み
+    Entities.Tree,      # 木
+    Entities.Carrot,    # にんじん
+    Entities.Pumpkin,   # かぼちゃ
+    Entities.Sunflower  # ひまわり
+]
+
+# 水と肥料の散布関数
 def farm_SpeedUp():
     if get_water() < 1:
         if num_items(Items.Water) > 0:
@@ -6,60 +27,68 @@ def farm_SpeedUp():
         if num_items(Items.Fertilizer) > 0:
             use_item(Items.Fertilizer)  # 肥料
 
-# にんじん作成
-def plant_Carrot():
-    if get_ground_type() != Grounds.Soil:
-        till() # 土を耕す
-    else :
+# 農作物作成関数
+def plant_entities(list_idx, i, j):
+    if (list_idx > ENTITIES_LIST_IDX_SUNFLOWER):
+        return
+
+    # にんじん or かぼちゃ
+    if (list_idx == (ENTITIES_LIST_IDX_CARROT or ENTITIES_LIST_IDX_PUMPKIN)):
+        if get_ground_type() != Grounds.Soil:
+            till()
+
         if can_harvest():
-            harvest() # 収穫
-            plant(Entities.Carrot) # 人参を埋める
+            harvest()
+
+        plant(g_entities_list[list_idx])
+        farm_SpeedUp()
+
+    # 茂み
+    if (list_idx == ENTITIES_LIST_IDX_BUSH):
+        if can_harvest():
+            harvest()
+            plant(g_entities_list[list_idx])
+
+    # 木
+    if (list_idx == ENTITIES_LIST_IDX_TREE):
+        if get_ground_type() == Grounds.Soil:
+            till()
+
+        if((i % 2 == 0) and (j % 2 == 0)) or ((i % 2 == 1) and (j % 2 == 1)) :
+            if can_harvest():
+                harvest()
+                plant(g_entities_list[list_idx])
+            else:
+                harvest() # 空き地の草刈り
+
+    # ひまわり
+    if (list_idx == ENTITIES_LIST_IDX_SUNFLOWER):
+        if get_ground_type() != Grounds.Soil:
+            till()
+
+        if can_harvest():
+            harvest()
+            plant(g_entities_list[list_idx])
             farm_SpeedUp()
 
-# かぼちゃ作成
-def plant_Pumpkin():
-    if get_ground_type() != Grounds.Soil:
-        till() # 土を耕す
-    else :
+    # 草
+    if (list_idx == ENTITIES_LIST_IDX_GRASS):
         if can_harvest():
-            harvest() # 収穫
-            plant(Entities.Pumpkin) # かぼちゃを植える
-            farm_SpeedUp()
+            harvest()
 
-# 茂み作成
-def plant_Bush():
-    if can_harvest():
-        harvest() # 収穫
-        plant(Entities.Bush)
 
-# 木作成
-# NOTE: 木は四方に木で囲うと成長速度が1/16になる
-def plant_Tree(i, j):
-    if((i % 2 == 0) and (j % 2 == 0)) or (not(i % 2 == 0) and not(j % 2 == 0)) :
-        if can_harvest():
-            harvest() # 収穫
-            plant(Entities.Tree)
-    else:
-        harvest() # 空き地の草刈り
 
-# 草作成
-def plant_Hay():
-    if can_harvest():
-        harvest() # 収穫
-    else :
-        till() # 土を耕す
-
+# メインループ
 while True:
     # clear()
 
-    i = 0
-    j = 0
-    for i in range(12): # 農地面積 12x12
-        move(East)
-        for j in range(12): # 農地面積 12x12
-            # plant_Hay()         # 草
-            # plant_Bush()        # 茂
-            plant_Tree(i, j)        # 木
-            # plant_Carrot()      # 人参
-            # plant_Pumpkin()     # かぼちゃ
+    wortd_size = get_world_size()# 農地面積
+    for i in range(wortd_size):
+        move(East) # 東に移動
+        for j in range(wortd_size):
+            # plant_entities(ENTITIES_LIST_IDX_GRASS,0,0)   # 草
+            # plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
+            # plant_entities(ENTITIES_LIST_IDX_CARROT,i,j)  # 木
+            plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
+            # plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
             move(North) # 北に移動
