@@ -23,6 +23,8 @@ ENTITIES_LIST_IDX_CACTUS    = 6
 MAIN_DRONE                  = 0
 SUB_DRONE                   = 1
 
+FARM_TLG_CNT                = 1000000
+FARM_MAX_CNT                = (FARM_TLG_CNT * 4)
 # -----------------------------------------------------------------------------
 # [グローバル変数]
 # 農作物テーブル
@@ -54,18 +56,37 @@ def farm_SpeedUp():
         if num_items(Items.Fertilizer) > 0:
             use_item(Items.Fertilizer)  # 肥料
 
+# サボテン用の並び替えアルゴリズム
+def sort_algo():
+    # サイズ取得ステップ(サイズ範囲:0~9)
+    cactus_size       = measure()      # 中心のサボテンサイズ
+    cactus_east_size  = measure(East)  # 東のサボテンサイズ
+    cactus_west_size  = measure(West)  # 西のサボテンサイズ
+    cactus_south_size = measure(South) # 南のサボテンサイズ
+    cactus_north_size = measure(North) # 北のサボテンサイズ
+
+    # TODO:サボテンの並び替え処理実装
+    # swap(East)  # 東のサボテンサイズ
+    # swap(West)  # 西のサボテンサイズ
+    # swap(South) # 南のサボテンサイズ
+    # swap(North) # 北のサボテンサイズ
+
 # 農作物作成ステートマシーン
 def sm_plant_entities(arg_entities, i):
-    if (arg_entities > ENTITIES_LIST_IDX_SUNFLOWER):
+    if (arg_entities > ENTITIES_LIST_IDX_CACTUS):
         return
 
     # サボテン
     if (arg_entities == ENTITIES_LIST_IDX_CACTUS):
+        if get_ground_type() == Grounds.Grassland:
+            harvest()
+            till()
         if can_harvest(): # 刈り取る
             sort_algo() # 並び替えアルゴリズム実施
             harvest()
-        else: # 植え付け
-            plant(g_entities_list[arg_entities])
+        # 植え付け
+        plant(g_entities_list[arg_entities])
+        farm_SpeedUp()
 
     # にんじん or かぼちゃ
     if ((arg_entities == ENTITIES_LIST_IDX_CARROT) or (arg_entities == ENTITIES_LIST_IDX_PUMPKIN)):
@@ -91,7 +112,7 @@ def sm_plant_entities(arg_entities, i):
             harvest()
             till()
 
-        if(i % 2 == 0) or (i % 2 == 1) :
+        if(i % 2 == 0):
             if can_harvest():
                 harvest()
                 plant(g_entities_list[arg_entities])
@@ -120,6 +141,7 @@ def sm_plant_entities(arg_entities, i):
 
 # メインドーロン処理
 def main_proc():
+    # change_hat(Hats.Dinosaur_Hat)
     wortd_size = get_world_size() # 32x32面 = 1024面
     for i in range(wortd_size): # 横32面
         spawn_drone(sub_proc) # サブドローンを生成
@@ -129,21 +151,23 @@ def main_proc():
 def sub_proc():
     wortd_size = get_world_size()
     for i in range(32):
-        # ひまわりのパワーバブで速度2倍速
+        # ひまわりのパワーバフで速度2倍速
         if(i < 3):
-            sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER, 0) # ひまわり
+            sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER, 0)   # ひまわり
         else:
-            if(num_items(Items.Hay) < 100000):
-                sm_plant_entities(ENTITIES_LIST_IDX_GRASS, 0)   # 草
-            elif(num_items(Items.Wood) < 100000):
-                sm_plant_entities(ENTITIES_LIST_IDX_TREE, i)    # 木
-            elif(num_items(Items.Carrot) < 100000):
-                sm_plant_entities(ENTITIES_LIST_IDX_CARROT, 0)  # にんじん
-            else:
-                sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN, 0) # かぼちゃ
-
+            # if(num_items(Items.Hay) < FARM_TLG_CNT) or (num_items(Items.Hay) < FARM_MAX_CNT):
+            #     sm_plant_entities(ENTITIES_LIST_IDX_GRASS, 0)   # 草
+            # elif(num_items(Items.Wood) < FARM_TLG_CNT) or (num_items(Items.Hay) < FARM_MAX_CNT):
+            #     sm_plant_entities(ENTITIES_LIST_IDX_TREE, i)    # 木
+            # elif(num_items(Items.Carrot) < FARM_TLG_CNT) or (num_items(Items.Hay) < FARM_MAX_CNT):
+            #     sm_plant_entities(ENTITIES_LIST_IDX_CARROT, 0)  # にんじん
+            # elif(num_items(Items.Pumpkin) < FARM_TLG_CNT) or (num_items(Items.Pumpkin) < FARM_MAX_CNT):
+            #     sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN, 0) # かぼちゃ
+            # else:
+            sm_plant_entities(ENTITIES_LIST_IDX_CACTUS, 0) # サボテン
         move(North) # 北に移動
 
 # メインループ
+clear()
 while True:
     main_proc()
