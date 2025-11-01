@@ -52,9 +52,8 @@ def farm_SpeedUp():
     if get_water() < 1:
         if num_items(Items.Water) > 0:
             use_item(Items.Water) # 水やり
-    else :
-        if num_items(Items.Fertilizer) > 0:
-            use_item(Items.Fertilizer)  # 肥料
+        # if num_items(Items.Fertilizer) > 0:
+        #     use_item(Items.Fertilizer)  # 肥料
 
 # サボテン用の並び替えアルゴリズム
 def sort_algo():
