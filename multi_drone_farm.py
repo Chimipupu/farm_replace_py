@@ -55,7 +55,7 @@ def farm_SpeedUp():
             use_item(Items.Fertilizer)  # 肥料
 
 # 農作物作成ステートマシーン
-def sm_plant_entities(arg_entities, i, j):
+def sm_plant_entities(arg_entities, i):
     if (arg_entities > ENTITIES_LIST_IDX_SUNFLOWER):
         return
 
@@ -91,7 +91,7 @@ def sm_plant_entities(arg_entities, i, j):
             harvest()
             till()
 
-        if((i % 2 == 0) and (j % 2 == 0)) or ((i % 2 == 1) and (j % 2 == 1)) :
+        if(i % 2 == 0) or (i % 2 == 1) :
             if can_harvest():
                 harvest()
                 plant(g_entities_list[arg_entities])
@@ -113,6 +113,8 @@ def sm_plant_entities(arg_entities, i, j):
 
     # 草
     if (arg_entities == ENTITIES_LIST_IDX_GRASS):
+        if get_ground_type() == Grounds.Soil:
+            till()
         if can_harvest():
             harvest()
 
@@ -129,16 +131,15 @@ def sub_proc():
     for i in range(32):
         # ひまわりのパワーバブで速度2倍速
         if(i < 3):
-            sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER,0,0) # ひまわり
+            sm_plant_entities(ENTITIES_LIST_IDX_SUNFLOWER, 0) # ひまわり
         else:
-            # sm_plant_entities(ENTITIES_LIST_IDX_GRASS,i,j)    # 草
-            # sm_plant_entities(ENTITIES_LIST_IDX_TREE,i,j)    # 木
-            # sm_plant_entities(ENTITIES_LIST_IDX_BUSH,0,0)    # 茂み
-            sm_plant_entities(ENTITIES_LIST_IDX_CARROT,0,0)  # にんじん
-            # if num_items(Items.Fertilizer) > 0:
-            #         use_item(Items.Weird_Substance)
-            # sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN,0,0) # かぼちゃ
-            # sm_plant_entities(ENTITIES_LIST_IDX_CACTUS,0,0) # サボテン
+            if(num_items(Items.Hay) < 100000):
+                sm_plant_entities(ENTITIES_LIST_IDX_GRASS, 0)   # 草
+            elif(num_items(Items.Wood) < 100000):
+                sm_plant_entities(ENTITIES_LIST_IDX_TREE, i)    # 木
+            else:
+                sm_plant_entities(ENTITIES_LIST_IDX_CARROT, 0)  # にんじん
+
         move(North) # 北に移動
 
 # メインループ

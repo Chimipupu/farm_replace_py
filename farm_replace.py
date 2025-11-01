@@ -170,6 +170,9 @@ def sm_plant_entities(arg_entities, i, j):
 
     # 草
     if (arg_entities == ENTITIES_LIST_IDX_GRASS):
+        if get_ground_type() == Grounds.Soil:
+            till()
+
         if can_harvest():
             harvest()
 
