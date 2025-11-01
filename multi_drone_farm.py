@@ -137,8 +137,10 @@ def sub_proc():
                 sm_plant_entities(ENTITIES_LIST_IDX_GRASS, 0)   # 草
             elif(num_items(Items.Wood) < 100000):
                 sm_plant_entities(ENTITIES_LIST_IDX_TREE, i)    # 木
-            else:
+            elif(num_items(Items.Carrot) < 100000):
                 sm_plant_entities(ENTITIES_LIST_IDX_CARROT, 0)  # にんじん
+            else:
+                sm_plant_entities(ENTITIES_LIST_IDX_PUMPKIN, 0) # かぼちゃ
 
         move(North) # 北に移動
 
